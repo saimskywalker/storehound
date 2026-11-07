@@ -13,6 +13,16 @@
 - The production-shaped fixture pins five values with `checks:`.
 - `--list-rules` also lists the project checks from the configuration file,
   with their severity and reason.
+- `purpose-string-missing` gives each built-in plugin key a level, with a
+  link to the plugin README section it comes from (table in
+  `doc/rules.md`). A missing required key is still an error; a missing
+  conditional key is a warning that states the condition. image_picker's
+  `NSMicrophoneUsageDescription` is conditional ("only if you record video"),
+  so an image_picker app without it now gets a warning instead of an error.
+  `purpose-string-quality` accepts a "not used" string for a conditional key.
+- The `rejected_app` fixture links `local_auth` without
+  `NSFaceIDUsageDescription`, so it misses one required and one conditional
+  key.
 
 ## 0.2.0
 
