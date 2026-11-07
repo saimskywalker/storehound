@@ -36,7 +36,7 @@ Planned rules link the issue that tracks them.
 | `privacy-manifest-tracking` | `NSPrivacyTracking` agrees with each entry's Tracking flag and with `NSPrivacyTrackingDomains` | A manifest that contradicts itself and the privacy label |
 | `privacy-manifest-sdk-data` | Collected data covers what linked SDKs (Firebase, AdMob, StoreKit, Sentry, …) collect, read from `pubspec.lock` | "Collects nothing" next to an analytics SDK, a label/manifest mismatch reviewers flag |
 | `tracking-usage-description` | `NSUserTrackingUsageDescription` exists exactly when `PrivacyInfo.xcprivacy` declares tracking; warns when `app_tracking_transparency` is linked without it | App Store Connect refusing "Add for Review"; an ATT request that terminates the app |
-| `purpose-string-missing` | Plugins that touch the camera, microphone, photos, location, contacts, Face ID… have their `NS…UsageDescription`; Always location also has When-In-Use; protected APIs a bundled SDK only references (`linked_by_plugin`) have their key too, both location keys for a CoreLocation reference | ITMS-90683 "Missing purpose string", also for an API the app never calls; a crash at the first permission request |
+| `purpose-string-missing` | Plugins that touch the camera, microphone, photos, location, contacts, Face ID… have their `NS…UsageDescription` (an error for a required key, a warning that states the condition for a conditional one; see [Plugin purpose strings](#plugin-purpose-strings)); Always location also has When-In-Use; protected APIs a bundled SDK only references (`linked_by_plugin`) have their key too, both location keys for a CoreLocation reference | ITMS-90683 "Missing purpose string", also for an API the app never calls; a crash at the first permission request |
 | `purpose-string-quality` | Purpose strings name a feature and give an example instead of restating the permission; a string for a key the app does not use says so and why the key is there (recognised by its wording or listed under `linked_only`), and is an error while a plugin that requests the permission is a direct dependency | Guideline 5.1.1(ii) rejection ("needs camera access"); a "not used" string users see in a real permission prompt |
 | `background-modes-justified` | Every `UIBackgroundModes` entry is a mode Apple defines and has a justification recorded under `allow`: an error when no linked plugin uses the mode, a warning when one plausibly does; `processing` also needs `BGTaskSchedulerPermittedIdentifiers` | Guideline 2.5.4 rejection ("unable to locate any features that require persistent audio") |
 | `export-options-build-number` | Every `ExportOptions*.plist` with method `app-store` / `app-store-connect` sets `manageAppVersionAndBuildNumber` to false (it defaults to YES) | Xcode silently bumping `CFBundleVersion` at export |
@@ -46,6 +46,39 @@ Planned rules link the issue that tracks them.
 | `android-target-sdk` | `targetSdk` meets Google Play's current deadline (dated table, overridable; follows `flutter.targetSdkVersion` into your Flutter SDK) | Play Console refusing your update, usually during an urgent fix |
 | `android-16kb-page-size` | When `targetSdk` is 35+ or cannot be determined: Android Gradle Plugin ≥ 8.5.1 (or legacy packaging), NDK r28+ for your own native code | Play not letting you release an update without 16 KB page-size support, from 1 February 2027 ([Android guide](https://developer.android.com/guide/practices/page-sizes#google-play-compatibility-requirement)) |
 | `unreadable-file` | Every file above parses (binary plists get a `plutil` hint) | Rules silently passing a file nobody could read |
+
+## Plugin purpose strings
+
+`purpose-string-missing` knows the Info.plist keys these plugins ask for. Each
+key is **required** (every app that links the plugin needs it; missing is an
+error) or **conditional** (the plugin's README asks for it only when you use
+one feature; missing is a warning that names the feature). A key is
+conditional only when the plugin's own README says so. Keys you add with
+`required_by_plugin` are required.
+
+| Plugin | Required | Conditional | Source |
+|---|---|---|---|
+| `image_picker` | `NSPhotoLibraryUsageDescription`, `NSCameraUsageDescription` | `NSMicrophoneUsageDescription`: only if you record video | [README, "iOS"](https://pub.dev/packages/image_picker#ios) |
+| `camera` | `NSCameraUsageDescription`, `NSMicrophoneUsageDescription` | | [README, "iOS"](https://pub.dev/packages/camera#ios) |
+| `mobile_scanner` | `NSCameraUsageDescription` | | [README, "iOS"](https://pub.dev/packages/mobile_scanner#ios) |
+| `geolocator` | `NSLocationWhenInUseUsageDescription` | | [README, "Usage" → "iOS"](https://pub.dev/packages/geolocator#usage) |
+| `location` | `NSLocationWhenInUseUsageDescription` | | [README, "iOS"](https://pub.dev/packages/location#ios) |
+| `record` | `NSMicrophoneUsageDescription` | | [README, "iOS"](https://pub.dev/packages/record#ios) |
+| `flutter_sound` | `NSMicrophoneUsageDescription` | | [Installation guide, "Post Installation"](https://flutter-sound.canardoux.xyz/tau/guides/guides-install.html#post-installation) |
+| `speech_to_text` | `NSSpeechRecognitionUsageDescription`, `NSMicrophoneUsageDescription` | | [README, "iOS & macOS"](https://pub.dev/packages/speech_to_text#ios--macos) |
+| `local_auth` | `NSFaceIDUsageDescription` | | [local_auth_darwin README, "Setup"](https://pub.dev/packages/local_auth_darwin#setup) |
+| `flutter_contacts` | `NSContactsUsageDescription` | | [README, "Configure Permissions"](https://pub.dev/packages/flutter_contacts#2-configure-permissions) |
+| `flutter_blue_plus` | `NSBluetoothAlwaysUsageDescription` | | [README, "Add permissions for iOS"](https://pub.dev/packages/flutter_blue_plus#add-permissions-for-ios) |
+| `photo_manager` | `NSPhotoLibraryUsageDescription` | | [README, "iOS config preparation"](https://pub.dev/packages/photo_manager#ios-config-preparation) |
+| `gal` | `NSPhotoLibraryAddUsageDescription` | | [README, "iOS Setup"](https://pub.dev/packages/gal#ios-setup) |
+| `flutter_webrtc` | `NSCameraUsageDescription`, `NSMicrophoneUsageDescription` | | [README, "iOS"](https://pub.dev/packages/flutter_webrtc#ios) |
+| `livekit_client` | `NSCameraUsageDescription`, `NSMicrophoneUsageDescription` | | [README, "iOS"](https://pub.dev/packages/livekit_client#ios) |
+| `agora_rtc_engine` | `NSMicrophoneUsageDescription`, `NSCameraUsageDescription` | | [README, "iOS & macOS"](https://pub.dev/packages/agora_rtc_engine#ios--macos) |
+
+When another linked plugin requires the same key, or a bundled SDK references
+its API (`linked_by_plugin`), the missing key is an error. A purpose string
+that says the app does not use a conditional key's resource is not reported
+by `purpose-string-quality`, since the app may not use that feature.
 
 ## What a finding looks like
 
@@ -65,14 +98,18 @@ purpose-string-missing — Linked plugins have the purpose strings they need
   reaches the permission prompt. The upload check is static: a protected API
   that a bundled native SDK only references (linked, never requested) needs its
   key too, and a CoreLocation reference usually includes the Always
-  authorization API, so both location keys are asked for.
+  authorization API, so both location keys are asked for. A key a plugin's
+  README asks for only when you use one of its features (image_picker's
+  microphone key, for recording video) is a warning that names the feature.
   fix: Add the key to ios/Runner/Info.plist with a sentence that names the
   feature and gives an example (see `purpose-string-quality`). When a dependency
   only references the API, add the key anyway with a sentence saying the app
   does not use the resource and why the key is present (see
   `purpose-string-quality` -> `linked_only`); deleting it only fails the next
-  upload. Extend the plugin table with the `required_by_plugin` option, and
-  record SDKs that only reference an API with `linked_by_plugin`.
+  upload. For a warning about a key needed only for one feature, add the key if
+  the app uses that feature, or `ignore` the finding with the reason. Extend the
+  plugin table with the `required_by_plugin` option, and record SDKs that only
+  reference an API with `linked_by_plugin`.
   docs: https://developer.apple.com/documentation/uikit/requesting-access-to-protected-resources
 ```
 

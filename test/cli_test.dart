@@ -73,6 +73,34 @@ void main() {
     expect(out, isNot(contains('why: ')));
   });
 
+  test('a required key is an error and a conditional key a warning', () {
+    final out = run([rejected, '--brief']).out;
+    expect(
+      out,
+      contains(
+        '  error  $rejected/ios/Runner/Info.plist\n'
+        '    `NSFaceIDUsageDescription` is missing, but local_auth needs it.',
+      ),
+    );
+    expect(
+      out,
+      contains(
+        '  warning  $rejected/ios/Runner/Info.plist\n'
+        '    `NSMicrophoneUsageDescription` is missing; image_picker needs it',
+      ),
+    );
+    final json = jsonDecode(run([rejected, '--format', 'json']).out) as Map;
+    final missing = [
+      for (final f in (json['findings'] as List).cast<Map<String, Object?>>())
+        if (f['rule'] == 'purpose-string-missing')
+          (f['severity'], (f['message'] as String).split('`')[1]),
+    ];
+    expect(missing, [
+      ('error', 'NSFaceIDUsageDescription'),
+      ('warning', 'NSMicrophoneUsageDescription'),
+    ]);
+  });
+
   test('--fail-on never exits 0 even with errors', () {
     expect(run([rejected, '--fail-on', 'never']).code, ExitCodes.ok);
   });

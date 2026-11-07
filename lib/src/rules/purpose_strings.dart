@@ -45,7 +45,9 @@ class PurposeStringMissingRule extends Rule {
       'check is static: a protected API that a bundled native SDK only '
       'references (linked, never requested) needs its key too, and a '
       'CoreLocation reference usually includes the Always authorization API, '
-      'so both location keys are asked for.';
+      'so both location keys are asked for. A key a plugin\'s README asks '
+      'for only when you use one of its features (image_picker\'s microphone '
+      'key, for recording video) is a warning that names the feature.';
 
   @override
   String get fix =>
@@ -54,7 +56,9 @@ class PurposeStringMissingRule extends Rule {
       'dependency only references the API, add the key anyway with a '
       'sentence saying the app does not use the resource and why the key is '
       'present (see `purpose-string-quality` -> `linked_only`); deleting it '
-      'only fails the next upload. Extend the plugin table with the '
+      'only fails the next upload. For a warning about a key needed only for '
+      'one feature, add the key if the app uses that feature, or `ignore` '
+      'the finding with the reason. Extend the plugin table with the '
       '`required_by_plugin` option, and record SDKs that only reference an '
       'API with `linked_by_plugin`.';
 
@@ -96,15 +100,34 @@ class PurposeStringMissingRule extends Rule {
     final project = context.project;
     final plist = project.infoPlist;
     if (plist == null) return;
-    final table = <String, List<String>>{
+    final table = <String, PluginPurposeStrings>{
       ...purposeStringsByPlugin,
-      ..._option(context, 'required_by_plugin'),
+      for (final MapEntry(key: plugin, value: keys) in _option(
+        context,
+        'required_by_plugin',
+      ).entries)
+        plugin: PluginPurposeStrings(
+          source: '',
+          section: '',
+          keys: [for (final key in keys) PluginKey.required(key)],
+        ),
     };
+    // Key to the linked plugins that need it in every app, and to the
+    // linked plugins that need it only for one feature.
     final needs = <String, List<String>>{};
-    for (final MapEntry(key: plugin, value: keys) in table.entries) {
+    final conditional = <String, List<(String, PluginKey, String)>>{};
+    for (final MapEntry(key: plugin, value: row) in table.entries) {
       if (!project.links(plugin)) continue;
-      for (final key in keys) {
-        needs.putIfAbsent(key, () => []).add(plugin);
+      for (final entry in row.keys) {
+        if (entry.level == KeyLevel.required) {
+          needs.putIfAbsent(entry.key, () => []).add(plugin);
+        } else {
+          conditional.putIfAbsent(entry.key, () => []).add((
+            plugin,
+            entry,
+            row.section,
+          ));
+        }
       }
     }
 
@@ -141,6 +164,22 @@ class PurposeStringMissingRule extends Rule {
           path: plist.path,
         );
       }
+    }
+    for (final MapEntry(key: key, value: plugins) in conditional.entries) {
+      if (needs.containsKey(key) ||
+          references.containsKey(key) ||
+          plist.root.has(key)) {
+        continue;
+      }
+      final reasons = [
+        for (final (plugin, entry, section) in plugins)
+          '$plugin needs it only if ${entry.condition} ($section)',
+      ];
+      yield finding(
+        '`$key` is missing; ${reasons.join('; ')}.',
+        path: plist.path,
+        severity: Severity.warning,
+      );
     }
     for (final MapEntry(key: key, value: plugins) in references.entries) {
       if (needs.containsKey(key) || plist.root.has(key)) continue;
@@ -406,10 +445,16 @@ class PurposeStringQualityRule extends Rule {
       // as one: says the app does not use the resource, says why the key
       // exists, and gives no example of a use.
       if (declared || (saysUnused && givesReason && !givesExample)) {
+        // A conditional key is honest to mark unused: the app may not use
+        // the feature that needs it.
         final requesting = [
-          for (final MapEntry(key: plugin, value: keys)
+          for (final MapEntry(key: plugin, value: row)
               in purposeStringsByPlugin.entries)
-            if (keys.contains(key) && context.project.links(plugin)) plugin,
+            if (row.keys.any(
+                  (k) => k.key == key && k.level == KeyLevel.required,
+                ) &&
+                context.project.links(plugin))
+              plugin,
         ];
         if (requesting.isNotEmpty) {
           final direct = requesting.any(context.project.linksDirectly);

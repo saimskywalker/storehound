@@ -1,4 +1,5 @@
 import 'package:storehound/src/data/linked_api_references.dart';
+import 'package:storehound/src/data/plugin_requirements.dart';
 import 'package:storehound/src/rules/purpose_strings.dart';
 import 'package:storehound/storehound.dart';
 import 'package:test/test.dart';
@@ -77,6 +78,132 @@ void main() {
           },
         ),
         hasLength(1),
+      );
+    });
+  });
+
+  group('purpose-string-missing, required and conditional keys', () {
+    const rule = PurposeStringMissingRule();
+    const microphone = 'NSMicrophoneUsageDescription';
+
+    test('a missing required key is an error', () {
+      expect(
+        runRule(rule, {
+          info: infoPlist(key('NSPhotoLibraryUsageDescription', 'x')),
+          'pubspec.lock': lockOf(['image_picker']),
+        }).where((f) => f.severity == Severity.error),
+        [
+          isFinding(
+            severity: Severity.error,
+            message:
+                '`NSCameraUsageDescription` is missing, but '
+                'image_picker needs it.',
+          ),
+        ],
+      );
+    });
+
+    test('a missing conditional key is a warning that states the '
+        'condition', () {
+      expect(
+        runRule(rule, {
+          info: infoPlist(
+            key('NSPhotoLibraryUsageDescription', 'x') +
+                key('NSCameraUsageDescription', 'x'),
+          ),
+          'pubspec.lock': lockOf(['image_picker']),
+        }),
+        [
+          isFinding(
+            severity: Severity.warning,
+            message:
+                '`$microphone` is missing; image_picker needs it only '
+                'if you record video (image_picker README, "iOS").',
+          ),
+        ],
+      );
+    });
+
+    test('a present conditional key passes', () {
+      expect(
+        runRule(rule, {
+          info: infoPlist(
+            key('NSPhotoLibraryUsageDescription', 'x') +
+                key('NSCameraUsageDescription', 'x') +
+                key(microphone, 'x'),
+          ),
+          'pubspec.lock': lockOf(['image_picker']),
+        }),
+        isEmpty,
+      );
+    });
+
+    test('a plugin that requires the key makes it an error', () {
+      expect(
+        runRule(rule, {
+          info: infoPlist(
+            key('NSPhotoLibraryUsageDescription', 'x') +
+                key('NSCameraUsageDescription', 'x'),
+          ),
+          'pubspec.lock': lockOf(['image_picker', 'camera']),
+        }),
+        [
+          isFinding(
+            severity: Severity.error,
+            message: '`$microphone` is missing, but camera needs it.',
+          ),
+        ],
+      );
+    });
+
+    test('a linked-only reference to the key makes it an error', () {
+      expect(
+        runRule(
+          rule,
+          {
+            info: infoPlist(
+              key('NSPhotoLibraryUsageDescription', 'x') +
+                  key('NSCameraUsageDescription', 'x'),
+            ),
+            'pubspec.lock': lockOf(['image_picker', 'acme_calls']),
+          },
+          options: {
+            'linked_by_plugin': {
+              'acme_calls': [microphone],
+            },
+          },
+        ),
+        [
+          isFinding(
+            severity: Severity.error,
+            message: contains('acme_calls references'),
+          ),
+        ],
+      );
+    });
+
+    test('every built-in key has a level, and every row a source', () {
+      expect(purposeStringsByPlugin, hasLength(16));
+      for (final MapEntry(key: plugin, value: row)
+          in purposeStringsByPlugin.entries) {
+        expect(row.source, startsWith('https://'), reason: plugin);
+        expect(row.section, isNotEmpty, reason: plugin);
+        expect(row.keys, isNotEmpty, reason: plugin);
+        for (final k in row.keys) {
+          expect(k.key, endsWith('UsageDescription'), reason: plugin);
+          if (k.level == KeyLevel.conditional) {
+            expect(k.condition, isNotEmpty, reason: '$plugin ${k.key}');
+          }
+        }
+      }
+      expect(
+        [
+          for (final MapEntry(key: plugin, value: row)
+              in purposeStringsByPlugin.entries)
+            for (final k in row.keys)
+              if (k.level == KeyLevel.conditional) '$plugin ${k.key}',
+        ],
+        ['image_picker $microphone'],
       );
     });
   });
@@ -498,6 +625,32 @@ void main() {
               message: contains('local_auth'),
             ),
           ],
+        );
+      });
+
+      test('passes a "not used" string for a conditional key', () {
+        const notUsedMicrophone =
+            'This app does not use your microphone. iOS requires this text '
+            'because the image picker plugin included in the app can record '
+            'video; the app never records video.';
+        final files = {
+          info: infoPlist(
+            key('NSMicrophoneUsageDescription', notUsedMicrophone),
+          ),
+        };
+        expect(
+          runRule(rule, {
+            ...files,
+            'pubspec.lock': lockOf(['image_picker']),
+          }),
+          isEmpty,
+        );
+        expect(
+          runRule(rule, {
+            ...files,
+            'pubspec.lock': lockOf(['camera']),
+          }),
+          [isFinding(message: contains('camera is linked and requests'))],
         );
       });
 

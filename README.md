@@ -69,8 +69,9 @@ privacy-manifest-present — The app target ships a PrivacyInfo.xcprivacy
 purpose-string-missing — Linked plugins have the purpose strings they need
   error  ios/Runner/Info.plist
     `NSPhotoLibraryUsageDescription` is missing, but image_picker needs it.
-  error  ios/Runner/Info.plist
-    `NSMicrophoneUsageDescription` is missing, but image_picker needs it.
+  warning  ios/Runner/Info.plist
+    `NSMicrophoneUsageDescription` is missing; image_picker needs it only if you
+    record video (image_picker README, "iOS").
 
 purpose-string-quality — Purpose strings name a feature and give an example, not restate the permission
   error  ios/Runner/Info.plist:5
@@ -78,10 +79,12 @@ purpose-string-quality — Purpose strings name a feature and give an example, n
     that uses it and give an example. Current text: "This app needs camera
     access."
 
-✗ 15 rules checked: 3 errors, 1 warning, 0 info. Failing: findings at or above `error`.
+✗ 15 rules checked: 2 errors, 2 warnings, 0 info. Failing: findings at or above `error`.
 ```
 
-The exit code is `1`, so CI fails. Without `--brief` each finding also says
+A key a plugin needs in every app is an error; a key its README asks for
+only when you use one feature, like the microphone for recording video, is a
+warning that names the feature. The exit code is `1`, so CI fails. Without `--brief` each finding also says
 why it matters, how to fix it, and links Apple's or Google's documentation.
 `--format json` and `--sarif` give the same findings in machine-readable form.
 

@@ -8,7 +8,7 @@ placeholder values.
 | Fixture | Shape | Expected result |
 |---|---|---|
 | `clean_app` | Minimal, like `flutter create` output | No findings |
-| `rejected_app` | Minimal, with one mistake per rule | Findings from most rules (see `test/cli_test.dart`) |
+| `rejected_app` | Minimal, with one mistake per rule (`purpose-string-missing` gets one required and one conditional key) | Findings from most rules (see `test/cli_test.dart`) |
 | `production_app` | A multi-flavor app shaped like one in production (below) | No findings with `--fail-on info`; output in `production_app.golden.txt` |
 
 ## production_app

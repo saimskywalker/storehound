@@ -96,7 +96,7 @@ code 2) with the line number, so a typo cannot silently switch a check off.
 |---|---|
 | `privacy-manifest-values` | `extra_data_types`, `extra_purposes`, `extra_api_reasons` (category → reasons) |
 | `privacy-manifest-sdk-data` | `sdk_data_types` (package → data types; `[]` disables a built-in entry) |
-| `purpose-string-missing` | `required_by_plugin` (package → Info.plist keys it requests), `linked_by_plugin` (package → Info.plist keys its binary only references) |
+| `purpose-string-missing` | `required_by_plugin` (package → Info.plist keys it requests, all required; replaces a built-in row), `linked_by_plugin` (package → Info.plist keys its binary only references) |
 | `purpose-string-quality` | `min_words`, `require_example`, `app_names`, `extra_example_markers`, `extra_unused_markers`, `linked_only` (Info.plist key → why it is there) |
 | `background-modes-justified` | `allow` (mode → justification), `extra_evidence` (mode → packages) |
 | `android-picker-queries` | `plugins` (extra file-picker packages) |
