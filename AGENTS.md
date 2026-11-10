@@ -93,8 +93,9 @@ Stop and ask the person you work for to provide them:
 
 - Never silence the analyzer or storehound (checked): no `// ignore:`,
   `// ignore_for_file:`, no changes to `analysis_options.yaml`, and no
-  `ignore:` entries or `enabled: false` in a `storehound.yaml` outside
-  `test/fixtures/rejected_app/`. Fix the finding instead.
+  `ignore:` entries, `enabled: false`, `fail_on:` or `severity:` lines in a
+  `storehound.yaml` outside `test/fixtures/rejected_app/`. Fix the finding
+  instead.
 - Never delete, skip, loosen or rewrite an existing test, expectation or
   fixture to make CI pass, and never regenerate
   `production_app.golden.txt` to accept a new finding: on that fixture it is

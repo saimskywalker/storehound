@@ -69,8 +69,9 @@ merged. The `PR rules` check enforces these:
   `test/`. A bug fix needs a test that fails without the fix.
 - **Small.** At most 400 changed lines, one issue per pull request.
 - **No suppressions.** No `// ignore:`, no changes to
-  `analysis_options.yaml`, and no `ignore:` entries or `enabled: false` in a
-  `storehound.yaml` outside `test/fixtures/rejected_app/`. Fix the finding.
+  `analysis_options.yaml`, and no `ignore:` entries, `enabled: false`,
+  `fail_on:` or `severity:` lines in a `storehound.yaml` outside
+  `test/fixtures/rejected_app/`. Fix the finding.
 - **At most 2 open pull requests** per person.
 
 If a rule really does not fit your change, say why in the description. A

@@ -49,14 +49,15 @@ jobs:
         if: ${{ !cancelled() && !contains(github.event.pull_request.labels.*.name, 'suppression-ok') }}
         run: |
           # Added Dart lines that silence the analyzer, or storehound config that turns a rule
-          # off or ignores a finding, outside the fixture that tests those options.
+          # off, ignores a finding or sets a severity or fail_on (any change: a diff line alone
+          # cannot tell a downgrade from an upgrade), outside the fixture that tests them.
           hits="$(jq -r '.[] | select(.patch) | .filename as $f
             | ($f | endswith(".dart")) as $dart
             | select($dart or (($f | test("(^|/)(storehound|imaji_store_preflight)\\.yaml$"))
                 and ($f | startswith("test/fixtures/rejected_app/") | not)))
             | .patch | split("\n")[]
             | select(startswith("+") and (if $dart then test("//\\s*ignore(_for_file)?:")
-                else test("^\\+\\s*(ignore\\s*:|-\\s*rule\\s*:|enabled\\s*:\\s*false\\b)") end))
+                else test("^\\+\\s*(ignore\\s*:|fail_on\\s*:|severity\\s*:|-\\s*rule\\s*:|enabled\\s*:\\s*false\\b)") end))
             | "\($f): \(.)"' "$RUNNER_TEMP/files.json")"
           if jq -e 'any(.[]; .filename | test("(^|/)analysis_options\\.yaml$"))' "$RUNNER_TEMP/files.json" >/dev/null; then
             hits="${hits}"$'\n'"analysis_options.yaml is changed"
