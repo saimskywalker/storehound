@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- The `android-16kb-page-size` fix text and the FAQ link the ELF alignment
+  check by its current name, alignmint.
 - Project checks: app-specific pins under `checks:` in `storehound.yaml`, for
   `Info.plist` keys (with nested keys) and `AndroidManifest.xml` attributes,
   with the operators `exists`, `absent`, `equals`, `absent_or_equals`,
@@ -23,6 +25,8 @@
 - The `rejected_app` fixture links `local_auth` without
   `NSFaceIDUsageDescription`, so it misses one required and one conditional
   key.
+- The `--output` summary on stderr says "1 error" and "1 warning" instead of
+  "1 errors" and "1 warnings".
 
 ## 0.2.0
 
