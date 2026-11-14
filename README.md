@@ -1,15 +1,18 @@
 # storehound
 
-Catch App Store and Google Play rejections in your Flutter project before you
-upload: one Dart command lints `Info.plist`, the privacy manifest,
-entitlements and `AndroidManifest.xml`, and fails CI on the mistakes that get
-builds refused.
+Find the configuration mistakes that get App Store and Google Play builds
+refused, before you upload: one Dart command lints `Info.plist`, the privacy
+manifest, entitlements and `AndroidManifest.xml`, and fails CI on them.
 
 [![pub version](https://img.shields.io/pub/v/storehound.svg)](https://pub.dev/packages/storehound)
 [![pub points](https://img.shields.io/pub/points/storehound)](https://pub.dev/packages/storehound/score)
 [![pub likes](https://img.shields.io/pub/likes/storehound)](https://pub.dev/packages/storehound/score)
 [![CI](https://github.com/saimskywalker/storehound/actions/workflows/ci.yml/badge.svg)](https://github.com/saimskywalker/storehound/actions/workflows/ci.yml)
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/saimskywalker/storehound/blob/main/LICENSE)
+
+![storehound annotations on a workflow run: missing and vague purpose strings, a privacy manifest that contradicts firebase_analytics, an outdated targetSdk](https://raw.githubusercontent.com/saimskywalker/storehound/main/doc/images/annotations.png)
+
+The GitHub Action on [storehound-demo](https://github.com/saimskywalker/storehound-demo/actions), a Flutter app configuration with common mistakes.
 
 ## Why
 
