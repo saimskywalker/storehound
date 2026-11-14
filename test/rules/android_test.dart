@@ -285,6 +285,7 @@ void main() {
 
     test('points to alignmint for prebuilt libraries', () {
       expect(rule.fix, contains('https://github.com/saimskywalker/alignmint)'));
+      expect(rule.fix, contains('alignmint 1.3.0 or newer'));
     });
 
     test('passes with a current Android Gradle Plugin', () {

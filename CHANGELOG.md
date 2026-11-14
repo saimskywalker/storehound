@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- The `android-16kb-page-size` fix text asks for alignmint 1.3.0 or newer,
+  the first version that judges compressed native libraries correctly.
+
 ## 0.2.1
 
 - The `android-16kb-page-size` fix text and the FAQ link the ELF alignment
