@@ -41,3 +41,29 @@ jobs:
         run: |
           dart run storehound --project test/fixtures/production_app --fail-on info --today 2026-10-01 --brief --no-color > production.txt
           diff -u test/fixtures/production_app.golden.txt production.txt
+
+  action:
+    name: GitHub Action on the fixtures
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # No security-events permission: the SARIF upload fails, the step passes.
+      - name: clean fixture passes
+        uses: ./ # zizmor: ignore[self-repository] actionlint does not know $/ yet
+        with:
+          project: test/fixtures/clean_app
+          sarif: true
+          artifact-name: storehound-clean
+      - name: rejected fixture fails
+        id: rejected
+        continue-on-error: true
+        uses: ./ # zizmor: ignore[self-repository] actionlint does not know $/ yet
+        with:
+          project: test/fixtures/rejected_app
+          artifact-name: storehound-rejected
+      - name: the rejected fixture failed the action
+        env:
+          OUTCOME: ${{ steps.rejected.outcome }}
+        run: test "$OUTCOME" = failure
