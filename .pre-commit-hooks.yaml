@@ -1,0 +1,7 @@
+- id: storehound
+  name: storehound
+  description: Lint Info.plist, the privacy manifest, entitlements and AndroidManifest.xml for store rejections.
+  entry: storehound
+  language: system
+  files: (Info\.plist|\.xcprivacy|\.entitlements|ExportOptions.*\.plist|AndroidManifest\.xml|build\.gradle(\.kts)?|pubspec\.(yaml|lock)|storehound\.yaml)$
+  pass_filenames: false

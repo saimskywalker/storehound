@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- A composite GitHub Action (`uses: saimskywalker/storehound@v0`): annotations,
+  a job summary, the JSON report as the `storehound-report` artifact and, with
+  `sarif: true`, a code scanning upload that cannot fail the job. Inputs:
+  `project`, `fail-on`, `version`, `sarif`, `artifact-name`.
+- A pre-commit hook, `storehound`, that runs when a store-facing file changes.
+- `doc/pr-comment.md`: a recipe for posting the Markdown report as a pull
+  request comment.
 - `--format markdown` writes the first 50 findings, most severe first, and
   how to fix them, for `$GITHUB_STEP_SUMMARY` or a pull request comment.
 - `--format github` prints findings as workflow commands, which GitHub shows

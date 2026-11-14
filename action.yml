@@ -1,0 +1,88 @@
+name: storehound
+description: Catch App Store and Google Play rejections in a Flutter project before upload.
+author: saimskywalker
+branding:
+  icon: check-circle
+  color: green
+
+inputs:
+  project:
+    description: Flutter project root to check.
+    default: .
+  fail-on:
+    description: Lowest severity that fails the job (error, warning, info or never). Default from storehound.yaml, else error.
+    default: ''
+  version:
+    description: storehound version to activate from pub.dev. Default the action's own code at its ref.
+    default: ''
+  sarif:
+    description: Upload a SARIF report to code scanning (needs security-events write). A failed upload does not fail the job.
+    default: 'false'
+  artifact-name:
+    description: Name of the JSON report artifact. Change it when the action runs more than once in a workflow run.
+    default: storehound-report
+
+runs:
+  using: composite
+  steps:
+    - uses: dart-lang/setup-dart@2286a0c042b44434fe26d292bbce8d34f7ec662b # v1.8.2
+
+    - name: Install storehound
+      shell: bash
+      env:
+        VERSION: ${{ inputs.version }}
+      run: |
+        if [ -n "$VERSION" ]; then
+          dart pub global activate storehound "$VERSION"
+        else
+          dart pub get --directory="$GITHUB_ACTION_PATH"
+        fi
+
+    - name: Run storehound
+      id: run
+      shell: bash
+      env:
+        PROJECT: ${{ inputs.project }}
+        FAIL_ON: ${{ inputs.fail-on }}
+        SARIF: ${{ inputs.sarif }}
+        VERSION: ${{ inputs.version }}
+      run: |
+        cmd=(dart "$GITHUB_ACTION_PATH/bin/storehound.dart")
+        if [ -n "$VERSION" ]; then cmd=(dart pub global run storehound); fi
+        cmd+=(--project "$PROJECT")
+        if [ -n "$FAIL_ON" ]; then cmd+=(--fail-on "$FAIL_ON"); fi
+        storehound() { "${cmd[@]}" "$@"; }
+        mkdir -p "$RUNNER_TEMP/storehound"
+        code=0
+        storehound --format json --output "$RUNNER_TEMP/storehound/storehound.json" || code=$?
+        if [ "$code" -gt 1 ]; then exit "$code"; fi
+        storehound --format github || true
+        storehound --format markdown >> "$GITHUB_STEP_SUMMARY" || true
+        if [ "$SARIF" = true ]; then
+          storehound --sarif --output "$RUNNER_TEMP/storehound/storehound.sarif" || true
+        fi
+        echo "code=$code" >> "$GITHUB_OUTPUT"
+
+    - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+      with:
+        name: ${{ inputs.artifact-name }}
+        path: ${{ runner.temp }}/storehound/storehound.json
+
+    - id: sarif
+      if: inputs.sarif == 'true'
+      continue-on-error: true
+      uses: github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+      with:
+        sarif_file: ${{ runner.temp }}/storehound/storehound.sarif
+        category: storehound
+
+    - name: Fail on findings
+      shell: bash
+      env:
+        CODE: ${{ steps.run.outputs.code }}
+        SARIF_UPLOAD: ${{ steps.sarif.outcome }}
+      run: |
+        if [ "$SARIF_UPLOAD" = failure ]; then
+          echo "::warning title=storehound::SARIF upload failed (code scanning unavailable or no security-events write). Findings are in the job summary, the annotations and the report artifact."
+        fi
+        exit "$CODE"

@@ -92,36 +92,45 @@ pull request comment, and `--format github` as pull request annotations.
 
 ## Run it in CI
 
-This job fails the build on errors and shows each finding as a code scanning
-annotation on the pull request:
+This job fails the build on errors, shows each finding as an annotation on
+the pull request and writes a job summary:
 
 ```yaml
 name: Store preflight
 on: [push, pull_request]
 
 jobs:
-  preflight:
+  storehound:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      security-events: write   # upload SARIF
     steps:
       - uses: actions/checkout@v6
-      - uses: dart-lang/setup-dart@v1
-      - run: dart pub global activate storehound '^0.2.1'
-      - run: dart pub global run storehound --sarif --output preflight.sarif
-      - uses: github/codeql-action/upload-sarif@v4
-        if: always()           # upload even when the check fails the job
         with:
-          sarif_file: preflight.sarif
-          category: storehound
+          persist-credentials: false
+      - uses: saimskywalker/storehound@v0
 ```
 
-No macOS runner needed. Code scanning needs a public repository or GitHub
-Advanced Security; without it, drop the upload step and read the text output
-in the job log.
-[More on CI](https://github.com/saimskywalker/storehound/blob/main/doc/github-actions.md),
-including how `android-target-sdk` behaves on a Dart-only runner.
+No macOS runner needed. The JSON report is uploaded as the `storehound-report`
+artifact. With `sarif: true` and `security-events: write` the findings also go
+to code scanning (a public repository or GitHub Advanced Security).
+[More on CI](https://github.com/saimskywalker/storehound/blob/main/doc/github-actions.md):
+inputs, permissions, a pull request comment, and how `android-target-sdk`
+behaves on a Dart-only runner.
+
+### pre-commit
+
+With storehound on your `PATH` (`dart pub global activate storehound`), add
+this to `.pre-commit-config.yaml`; it runs when a store-facing file changes:
+
+```yaml
+repos:
+  - repo: https://github.com/saimskywalker/storehound
+    rev: v0.3.0
+    hooks:
+      - id: storehound
+        # entry: dart run storehound   # when it is a dev dependency
+```
 
 ## What it checks
 
@@ -179,7 +188,7 @@ please open an issue with an anonymised copy of the lines involved.
 
 - [Rules and the store messages they prevent](https://github.com/saimskywalker/storehound/blob/main/doc/rules.md), including planned rules
 - [Command line, configuration and library use](https://github.com/saimskywalker/storehound/blob/main/doc/configuration.md)
-- [GitHub Actions with code scanning](https://github.com/saimskywalker/storehound/blob/main/doc/github-actions.md)
+- [GitHub Actions](https://github.com/saimskywalker/storehound/blob/main/doc/github-actions.md) and [a pull request comment](https://github.com/saimskywalker/storehound/blob/main/doc/pr-comment.md)
 - [FAQ, limitations and comparisons](https://github.com/saimskywalker/storehound/blob/main/doc/faq.md)
 - [pub.dev page](https://pub.dev/packages/storehound) and [API docs](https://pub.dev/documentation/storehound/latest/)
 - [CHANGELOG](https://github.com/saimskywalker/storehound/blob/main/CHANGELOG.md) and [issues](https://github.com/saimskywalker/storehound/issues)
