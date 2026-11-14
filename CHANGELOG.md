@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.2.1
 
 - The `android-16kb-page-size` fix text and the FAQ link the ELF alignment
   check by its current name, alignmint.
