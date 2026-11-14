@@ -7,7 +7,7 @@ storehound [options] [project-dir]
 
 -p, --project=<dir>     Flutter project root to check (default ".")
 -c, --config=<file>     Configuration file (default: storehound.yaml in the project)
--f, --format            text (default), json, sarif
+-f, --format            text (default), json, sarif, markdown
     --sarif             Shorthand for --format sarif
 -o, --output=<file>     Write the report to a file; a one-line summary goes to stderr
     --fail-on           error (default), warning, info, never

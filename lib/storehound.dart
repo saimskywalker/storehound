@@ -14,6 +14,7 @@ export 'src/config.dart';
 export 'src/engine.dart';
 export 'src/finding.dart';
 export 'src/project.dart';
+export 'src/report/ci_reporters.dart' show renderMarkdown;
 export 'src/report/machine_reporters.dart' show renderJson, renderSarif;
 export 'src/report/text_reporter.dart'
     show renderExplain, renderRuleList, renderText;

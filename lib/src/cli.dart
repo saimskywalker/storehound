@@ -6,6 +6,7 @@ import 'package:path/path.dart' as p;
 import 'config.dart';
 import 'engine.dart';
 import 'finding.dart';
+import 'report/ci_reporters.dart';
 import 'report/machine_reporters.dart';
 import 'report/text_reporter.dart';
 import 'rules/all_rules.dart';
@@ -44,7 +45,7 @@ ArgParser _parser() => ArgParser(usageLineLength: 80)
     'format',
     abbr: 'f',
     help: 'Output format.',
-    allowed: ['text', 'json', 'sarif'],
+    allowed: ['text', 'json', 'sarif', 'markdown'],
     defaultsTo: 'text',
   )
   ..addFlag('sarif', negatable: false, help: 'Shorthand for --format sarif.')
@@ -256,6 +257,7 @@ int runCli(
   final rendered = switch (format) {
     'json' => renderJson(report, pathPrefix: prefix),
     'sarif' => renderSarif(report, pathPrefix: prefix),
+    'markdown' => renderMarkdown(report, pathPrefix: prefix),
     _ => renderText(
       report,
       pathPrefix: prefix,
@@ -274,9 +276,7 @@ int runCli(
       return ExitCodes.usage;
     }
     err.writeln(
-      '$packageName: ${plural(report.count(Severity.error), 'error')}, '
-      '${plural(report.count(Severity.warning), 'warning')}, '
-      '${report.count(Severity.info)} info; report written to $output',
+      '$packageName: ${severityCounts(report)}; report written to $output',
     );
   } else {
     out.write(rendered.endsWith('\n') ? rendered : '$rendered\n');
