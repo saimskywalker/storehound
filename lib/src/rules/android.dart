@@ -413,8 +413,9 @@ class Android16KbPageSizeRule extends Rule {
       'android/gradle.properties). Projects with their own '
       'C/C++ code also need NDK r28+ (or the 16 KB linker flag). Source '
       'checks cannot see prebuilt `.so` files inside plugins: verify the '
-      'built bundle with an ELF alignment check such as alignmint '
-      '(https://github.com/saimskywalker/alignmint) or the '
+      'built bundle with alignmint 1.3.0 or newer '
+      '(https://github.com/saimskywalker/alignmint), the first version that '
+      'judges compressed native libraries correctly, or the '
       '`check_elf_alignment.sh` script from the Android documentation.';
 
   @override

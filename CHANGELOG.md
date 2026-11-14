@@ -4,6 +4,8 @@
 
 - `--format markdown` writes the first 50 findings, most severe first, and
   how to fix them, for `$GITHUB_STEP_SUMMARY` or a pull request comment.
+- The `android-16kb-page-size` fix text asks for alignmint 1.3.0 or newer,
+  the first version that judges compressed native libraries correctly.
 
 ## 0.2.1
 
