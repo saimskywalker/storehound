@@ -1,0 +1,12 @@
+.dart_tool/
+.packages
+/build/
+# The package's own lock file. Fixture projects under test/ keep theirs.
+/pubspec.lock
+.idea/
+*.iml
+.DS_Store
+/doc/api/
+
+# Images used only by the GitHub README
+doc/images/
