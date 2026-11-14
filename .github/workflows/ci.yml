@@ -49,7 +49,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      # No security-events permission: the SARIF upload fails, the step passes.
+      # No security-events permission: only findings decide the outcome, not the SARIF upload.
       - name: clean fixture passes
         uses: ./ # zizmor: ignore[self-repository] actionlint does not know $/ yet
         with:
