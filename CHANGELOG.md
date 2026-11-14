@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.2.2
 
 - A composite GitHub Action (`uses: saimskywalker/storehound@v0`): annotations,
   a job summary, the JSON report as the `storehound-report` artifact and, with

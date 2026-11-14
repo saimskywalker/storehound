@@ -1,5 +1,5 @@
 /// The package version. Kept in sync with `pubspec.yaml` by a test.
-const packageVersion = '0.2.1';
+const packageVersion = '0.2.2';
 
 /// The package name, as published on pub.dev.
 const packageName = 'storehound';
