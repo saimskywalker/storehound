@@ -66,4 +66,4 @@ the SDK collects it by default). Extend it with `sdk_data_types`.
 **Is 16 KB alignment fully checked?** Only the build toolchain, from source.
 Prebuilt `.so` files inside plugins can only be checked in the built APK/AAB;
 use an ELF alignment check such as
-[android-imaji-16kb-alignment](https://github.com/saimskywalker/android-imaji-16kb-alignment).
+[alignmint](https://github.com/saimskywalker/alignmint).
