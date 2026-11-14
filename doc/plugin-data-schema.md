@@ -96,5 +96,5 @@ its own table) and `backgroundModeEvidence`.
 
 ## License
 
-The data is published under CC0 1.0, so any tool can copy it without
-attribution requirements.
+Proposed: CC0 1.0, so any tool can copy the data without attribution
+requirements. Not decided yet.
