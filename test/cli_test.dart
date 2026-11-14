@@ -190,6 +190,26 @@ checks:
       expect(result.out, contains('Tokens live in shared preferences.'));
     });
 
+    test('--output summary counts one finding in the singular', () {
+      final root = writeProject({
+        'storehound.yaml':
+            '$checks'
+            '  no-cleartext:\n'
+            '    file: android_manifest\n'
+            '    element: application\n'
+            '    attribute: android:usesCleartextTraffic\n'
+            '    equals: "false"\n'
+            '    severity: warning\n'
+            '    reason: All traffic is HTTPS.\n',
+        'android/app/src/main/AndroidManifest.xml':
+            '<manifest xmlns:android="http://schemas.android.com/apk/res/android">\n'
+            '  <application android:allowBackup="true" />\n'
+            '</manifest>\n',
+      });
+      final result = run([root, '-f', 'json', '-o', p.join(root, 'out.json')]);
+      expect(result.err, contains(': 1 error, 1 warning, '));
+    });
+
     test('--explain check:<name> reads the configuration', () {
       final root = project();
       final explain = run(['--explain', 'check:no-backup', root]);
