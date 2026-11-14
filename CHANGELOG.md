@@ -4,6 +4,9 @@
 
 - `--format markdown` writes the first 50 findings, most severe first, and
   how to fix them, for `$GITHUB_STEP_SUMMARY` or a pull request comment.
+- `--format github` prints findings as workflow commands, which GitHub shows
+  as annotations: most severe first, at most 10 of each kind, then one notice
+  with the number left out. Findings without a file point at `pubspec.yaml`.
 - The `android-16kb-page-size` fix text asks for alignmint 1.3.0 or newer,
   the first version that judges compressed native libraries correctly.
 

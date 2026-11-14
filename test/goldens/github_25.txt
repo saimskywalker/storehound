@@ -1,0 +1,23 @@
+::error file=ios/Runner/File0.plist,title=purpose-string-missing::Finding 0.
+::error file=ios/Runner/File11.plist,title=check%3Amin-os::Finding 11.
+::error file=ios/Runner/File12.plist,line=12,title=purpose-string-missing::Finding 12.
+::error file=ios/Runner/File15.plist,title=check%3Amin-os::Finding 15.
+::error file=ios/Runner/File16.plist,line=16,title=purpose-string-missing::Finding 16.
+::error file=ios/Runner/File19.plist,title=check%3Amin-os::Finding 19.
+::error file=ios/Runner/File20.plist,line=20,title=purpose-string-missing::Finding 20.
+::error file=ios/Runner/File23.plist,title=check%3Amin-os::Finding 23.
+::error file=ios/Runner/File24.plist,line=24,title=purpose-string-missing::Finding 24.
+::error file=ios/Runner/File3.plist,title=check%3Amin-os::100%25 <wrong>,%0Asee `a|b` and `<b>`.
+::warning file=ios/Runner/File13.plist,title=check%3Amin-os::Finding 13.
+::warning file=ios/Runner/File17.plist,title=check%3Amin-os::Finding 17.
+::warning file=ios/Runner/File21.plist,title=check%3Amin-os::Finding 21.
+::warning file=ios/Runner/File5.plist,title=check%3Amin-os::Finding 5.
+::warning file=ios/Runner/File9.plist,title=check%3Amin-os::Finding 9.
+::warning file=pubspec.yaml,title=check%3Amin-os::Finding 1.
+::notice file=ios/Runner/File10.plist,line=10,title=purpose-string-missing::Finding 10.
+::notice file=ios/Runner/File14.plist,line=14,title=purpose-string-missing::Finding 14.
+::notice file=ios/Runner/File18.plist,line=18,title=purpose-string-missing::Finding 18.
+::notice file=ios/Runner/File2.plist,line=2,title=purpose-string-missing::Finding 2.
+::notice file=ios/Runner/File22.plist,line=22,title=purpose-string-missing::Finding 22.
+::notice file=ios/Runner/File6.plist,line=6,title=purpose-string-missing::Finding 6.
+::notice title=storehound::25 findings; 22 annotated, 3 left out (GitHub shows at most 10 of each kind per step). All 25 are in the job summary and the JSON report.

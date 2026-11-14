@@ -88,7 +88,7 @@ warning that names the feature. The exit code is `1`, so CI fails. Without `--br
 why it matters, how to fix it, and links Apple's or Google's documentation.
 `--format json` and `--sarif` give the same findings in machine-readable form.
 `--format markdown` writes them as a summary for `$GITHUB_STEP_SUMMARY` or a
-pull request comment.
+pull request comment, and `--format github` as pull request annotations.
 
 ## Run it in CI
 

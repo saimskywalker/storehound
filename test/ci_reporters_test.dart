@@ -53,7 +53,7 @@ List<Finding> _many(int count) => [
       ruleId: _rules[i.isEven ? 0 : 3].id,
       severity: Severity.values[i % 4 % 3],
       message: i == 3 ? '100% <wrong>,\nsee `a|b` and `<b>`.' : 'Finding $i.',
-      path: i == 0 ? null : 'ios/Runner/File$i.plist',
+      path: i == 1 ? null : 'ios/Runner/File$i.plist',
       line: i.isEven && i > 0 ? i : null,
     ),
 ];
@@ -115,5 +115,13 @@ void main() {
 
   test('markdown lists 50 findings and counts the rest', () {
     _golden(renderMarkdown(_report(_many(52))), 'markdown_52.md');
+  });
+
+  test('github annotates at most 10 of each kind', () {
+    _golden(renderGithub(_report(_many(25))), 'github_25.txt');
+  });
+
+  test('github prints nothing without findings', () {
+    expect(renderGithub(_report(const [])), isEmpty);
   });
 }
