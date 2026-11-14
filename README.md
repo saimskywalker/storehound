@@ -106,7 +106,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: dart-lang/setup-dart@v1
-      - run: dart pub global activate storehound '^0.2.0'
+      - run: dart pub global activate storehound '^0.2.1'
       - run: dart pub global run storehound --sarif --output preflight.sarif
       - uses: github/codeql-action/upload-sarif@v4
         if: always()           # upload even when the check fails the job
