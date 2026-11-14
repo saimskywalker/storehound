@@ -126,7 +126,7 @@ this to `.pre-commit-config.yaml`; it runs when a store-facing file changes:
 ```yaml
 repos:
   - repo: https://github.com/saimskywalker/storehound
-    rev: v0.3.0
+    rev: v0.2.2
     hooks:
       - id: storehound
         # entry: dart run storehound   # when it is a dev dependency

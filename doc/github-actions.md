@@ -58,7 +58,7 @@ With the same `permissions:` as above:
         with:
           persist-credentials: false
       - uses: dart-lang/setup-dart@v1
-      - run: dart pub global activate storehound '^0.2.1'
+      - run: dart pub global activate storehound '^0.2.2'
       - run: dart pub global run storehound --sarif --output preflight.sarif
       - uses: github/codeql-action/upload-sarif@v4
         if: always()           # upload even when the check fails the job

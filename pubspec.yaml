@@ -1,17 +1,17 @@
 name: storehound
 description: >-
-  Catch App Store and Google Play rejections in your Flutter project before
-  review. A Dart CLI that lints Info.plist, privacy manifests, entitlements and
-  AndroidManifest in CI.
-version: 0.2.1
+  Dart CLI that lints a Flutter app for config mistakes that get App Store and
+  Google Play builds refused: purpose strings, privacy manifest, entitlements,
+  AndroidManifest.
+version: 0.2.2
 repository: https://github.com/saimskywalker/storehound
 issue_tracker: https://github.com/saimskywalker/storehound/issues
 topics:
   - flutter
-  - ios
-  - android
   - app-store
-  - ci
+  - google-play
+  - privacy-manifest
+  - linter
 
 environment:
   sdk: ^3.8.0
