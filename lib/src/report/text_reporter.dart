@@ -76,12 +76,12 @@ String renderText(
   final w = report.count(Severity.warning);
   final i = report.count(Severity.info);
   final parts = [
-    _plural(e, 'error'),
-    _plural(w, 'warning'),
+    plural(e, 'error'),
+    plural(w, 'warning'),
     '$i info',
     if (report.suppressed.isNotEmpty) '${report.suppressed.length} suppressed',
     if (report.disabled.isNotEmpty)
-      '${_plural(report.disabled.length, 'rule')} disabled',
+      '${plural(report.disabled.length, 'rule')} disabled',
   ];
   final summary = '${report.rules.length} rules checked: ${parts.join(', ')}.';
   if (report.findings.isEmpty) {
@@ -99,7 +99,8 @@ String renderText(
   return out.toString();
 }
 
-String _plural(int n, String word) => '$n $word${n == 1 ? '' : 's'}';
+/// [n] followed by [word], with an `s` unless [n] is 1.
+String plural(int n, String word) => '$n $word${n == 1 ? '' : 's'}';
 
 /// Prefixes every line of [text] with [prefix], word-wrapping paragraphs to
 /// [width] columns. Lines that start with spaces (code) are left alone.

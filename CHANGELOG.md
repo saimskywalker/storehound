@@ -23,6 +23,8 @@
 - The `rejected_app` fixture links `local_auth` without
   `NSFaceIDUsageDescription`, so it misses one required and one conditional
   key.
+- The `--output` summary on stderr says "1 error" and "1 warning" instead of
+  "1 errors" and "1 warnings".
 
 ## 0.2.0
 
