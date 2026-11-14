@@ -4,7 +4,7 @@ Failing on findings at or above `error`. 4 rules checked.
 
 | | Rule | Where | Finding |
 |---|---|---|---|
-| ✗ error | `purpose-string-missing` | `pubspec.yaml` | Finding 0. |
+| ✗ error | `purpose-string-missing` | `ios/Runner/File0.plist` | Finding 0. |
 | ✗ error | `check:min-os` | `ios/Runner/File3.plist` | 100% \<wrong>, see `a\|b` and `<b>`. |
 | ✗ error | `purpose-string-missing` | `ios/Runner/File4.plist:4` | Finding 4. |
 | ✗ error | `check:min-os` | `ios/Runner/File7.plist` | Finding 7. |
@@ -30,7 +30,7 @@ Failing on findings at or above `error`. 4 rules checked.
 | ✗ error | `check:min-os` | `ios/Runner/File47.plist` | Finding 47. |
 | ✗ error | `purpose-string-missing` | `ios/Runner/File48.plist:48` | Finding 48. |
 | ✗ error | `check:min-os` | `ios/Runner/File51.plist` | Finding 51. |
-| ⚠ warning | `check:min-os` | `ios/Runner/File1.plist` | Finding 1. |
+| ⚠ warning | `check:min-os` | `pubspec.yaml` | Finding 1. |
 | ⚠ warning | `check:min-os` | `ios/Runner/File5.plist` | Finding 5. |
 | ⚠ warning | `check:min-os` | `ios/Runner/File9.plist` | Finding 9. |
 | ⚠ warning | `check:min-os` | `ios/Runner/File13.plist` | Finding 13. |
@@ -56,6 +56,8 @@ Failing on findings at or above `error`. 4 rules checked.
 | ℹ info | `purpose-string-missing` | `ios/Runner/File42.plist:42` | Finding 42. |
 
 … 2 more: see the job log or the JSON artifact
+
+23 findings not annotated: GitHub shows at most 10 of each kind per step.
 
 <details><summary>Why these matter and how to fix them</summary>
 

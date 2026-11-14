@@ -45,7 +45,7 @@ ArgParser _parser() => ArgParser(usageLineLength: 80)
     'format',
     abbr: 'f',
     help: 'Output format.',
-    allowed: ['text', 'json', 'sarif', 'markdown'],
+    allowed: ['text', 'json', 'sarif', 'markdown', 'github'],
     defaultsTo: 'text',
   )
   ..addFlag('sarif', negatable: false, help: 'Shorthand for --format sarif.')
@@ -258,6 +258,7 @@ int runCli(
     'json' => renderJson(report, pathPrefix: prefix),
     'sarif' => renderSarif(report, pathPrefix: prefix),
     'markdown' => renderMarkdown(report, pathPrefix: prefix),
+    'github' => renderGithub(report, pathPrefix: prefix),
     _ => renderText(
       report,
       pathPrefix: prefix,

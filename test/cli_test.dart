@@ -118,6 +118,12 @@ void main() {
     expect(result.out, contains('| `$rejected/ios/Runner/Info.plist'));
   });
 
+  test('github output annotates files under the working directory', () {
+    final result = run([rejected, '-f', 'github']);
+    expect(result.code, ExitCodes.findings);
+    expect(result.out, startsWith('::error file=$rejected/'));
+  });
+
   test('json output is machine readable', () {
     final result = run([rejected, '--format', 'json']);
     expect(result.code, ExitCodes.findings);

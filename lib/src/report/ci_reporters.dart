@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import '../engine.dart';
 import '../finding.dart';
 import '../version.dart';
@@ -6,6 +8,25 @@ import 'text_reporter.dart';
 
 const _maxRows = 50;
 const _symbols = ['✗', '⚠', 'ℹ'];
+
+// GitHub shows at most 10 annotations of each kind per step:
+// https://github.com/actions/toolkit/blob/main/docs/problem-matchers.md
+const _perKind = 10;
+
+/// How many findings of each severity get an annotation. When some are left
+/// out, one notice is kept for saying so.
+Map<Severity, int> _annotated(PreflightReport report) {
+  final shown = {
+    for (final s in Severity.values) s: min(report.count(s), _perKind),
+  };
+  if (shown.values.reduce((a, b) => a + b) < report.findings.length) {
+    shown[Severity.info] = min(shown[Severity.info]!, _perKind - 1);
+  }
+  return shown;
+}
+
+int _leftOut(PreflightReport report) =>
+    report.findings.length - _annotated(report).values.reduce((a, b) => a + b);
 
 // GitHub drops `<tag>` outside code spans as HTML; indented lines are code.
 String _escape(String line) => [
@@ -82,6 +103,14 @@ String renderMarkdown(PreflightReport report, {String pathPrefix = ''}) {
         'see the job log or the JSON artifact',
       );
   }
+  if (_leftOut(report) case final left when left > 0) {
+    out
+      ..writeln()
+      ..writeln(
+        '${plural(left, 'finding')} not annotated: GitHub shows at most '
+        '$_perKind of each kind per step.',
+      );
+  }
   out
     ..writeln()
     ..writeln(
@@ -111,5 +140,50 @@ String renderMarkdown(PreflightReport report, {String pathPrefix = ''}) {
       'Full report: `$packageName-report` artifact (JSON). Explain a rule: '
       '`$packageName --explain <rule>`. Exit code: ${report.failed ? 1 : 0}.',
     );
+  return out.toString();
+}
+
+/// Renders the findings as GitHub Actions workflow commands, which GitHub
+/// shows as annotations: by severity, then path, at most 10 of each kind,
+/// then a notice saying how many were left out.
+String renderGithub(PreflightReport report, {String pathPrefix = ''}) {
+  // Escaping as in @actions/core (toolkit/packages/core/src/command.ts).
+  String data(String s) =>
+      s.replaceAll('%', '%25').replaceAll('\r', '%0D').replaceAll('\n', '%0A');
+  String property(String s) =>
+      data(s).replaceAll(':', '%3A').replaceAll(',', '%2C');
+  String path(Finding f) => displayPath(pathPrefix, f.path ?? 'pubspec.yaml');
+
+  final out = StringBuffer();
+  final shown = _annotated(report);
+  final written = <Severity, int>{};
+  final sorted = [...report.findings]
+    ..sort(
+      (a, b) => a.severity != b.severity
+          ? a.severity.index - b.severity.index
+          : path(a) != path(b)
+          ? path(a).compareTo(path(b))
+          : (a.line ?? 0) - (b.line ?? 0),
+    );
+  for (final f in sorted) {
+    final n = written[f.severity] = (written[f.severity] ?? 0) + 1;
+    if (n > shown[f.severity]!) continue;
+    final properties = [
+      'file=${property(path(f))}',
+      if (f.line != null) 'line=${f.line}',
+      'title=${property(f.ruleId)}',
+    ];
+    final command = f.severity == Severity.info ? 'notice' : f.severity.name;
+    out.writeln('::$command ${properties.join(',')}::${data(f.message)}');
+  }
+  if (_leftOut(report) case final left when left > 0) {
+    final total = report.findings.length;
+    out.writeln(
+      '::notice title=$packageName::${plural(total, 'finding')}; '
+      '${total - left} annotated, $left left out (GitHub shows at most '
+      '$_perKind of each kind per step). All $total are in the job summary '
+      'and the JSON report.',
+    );
+  }
   return out.toString();
 }
