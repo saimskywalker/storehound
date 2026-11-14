@@ -87,6 +87,8 @@ only when you use one feature, like the microphone for recording video, is a
 warning that names the feature. The exit code is `1`, so CI fails. Without `--brief` each finding also says
 why it matters, how to fix it, and links Apple's or Google's documentation.
 `--format json` and `--sarif` give the same findings in machine-readable form.
+`--format markdown` writes them as a summary for `$GITHUB_STEP_SUMMARY` or a
+pull request comment.
 
 ## Run it in CI
 

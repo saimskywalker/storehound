@@ -111,6 +111,13 @@ void main() {
     expect(run([root, '--fail-on', 'warning']).code, ExitCodes.findings);
   });
 
+  test('markdown output puts paths under the working directory', () {
+    final result = run([rejected, '-f', 'markdown']);
+    expect(result.code, ExitCodes.findings);
+    expect(result.out, startsWith('### ✗ $packageName'));
+    expect(result.out, contains('| `$rejected/ios/Runner/Info.plist'));
+  });
+
   test('json output is machine readable', () {
     final result = run([rejected, '--format', 'json']);
     expect(result.code, ExitCodes.findings);

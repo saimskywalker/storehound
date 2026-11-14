@@ -72,13 +72,8 @@ String renderText(
     out.writeln();
   }
 
-  final e = report.count(Severity.error);
-  final w = report.count(Severity.warning);
-  final i = report.count(Severity.info);
   final parts = [
-    plural(e, 'error'),
-    plural(w, 'warning'),
-    '$i info',
+    severityCounts(report),
     if (report.suppressed.isNotEmpty) '${report.suppressed.length} suppressed',
     if (report.disabled.isNotEmpty)
       '${plural(report.disabled.length, 'rule')} disabled',
@@ -101,6 +96,12 @@ String renderText(
 
 /// [n] followed by [word], with an `s` unless [n] is 1.
 String plural(int n, String word) => '$n $word${n == 1 ? '' : 's'}';
+
+/// The active findings of [report] per severity: `2 errors, 1 warning, 0 info`.
+String severityCounts(PreflightReport report) =>
+    '${plural(report.count(Severity.error), 'error')}, '
+    '${plural(report.count(Severity.warning), 'warning')}, '
+    '${report.count(Severity.info)} info';
 
 /// Prefixes every line of [text] with [prefix], word-wrapping paragraphs to
 /// [width] columns. Lines that start with spaces (code) are left alone.

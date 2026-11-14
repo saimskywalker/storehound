@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- `--format markdown` writes the first 50 findings, most severe first, and
+  how to fix them, for `$GITHUB_STEP_SUMMARY` or a pull request comment.
+
 ## 0.2.1
 
 - The `android-16kb-page-size` fix text and the FAQ link the ELF alignment
