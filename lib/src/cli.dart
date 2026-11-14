@@ -274,8 +274,8 @@ int runCli(
       return ExitCodes.usage;
     }
     err.writeln(
-      '$packageName: ${report.count(Severity.error)} errors, '
-      '${report.count(Severity.warning)} warnings, '
+      '$packageName: ${plural(report.count(Severity.error), 'error')}, '
+      '${plural(report.count(Severity.warning), 'warning')}, '
       '${report.count(Severity.info)} info; report written to $output',
     );
   } else {
